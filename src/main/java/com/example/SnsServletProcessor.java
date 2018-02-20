@@ -24,6 +24,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
+import java.io.PrintWriter;
 
 /**
  * Processes message received from SNS.
@@ -47,13 +48,21 @@ public class SnsServletProcessor implements HttpServletProcessor {
                 if (snsNotification.getSubject().equalsIgnoreCase("unsubscribe")) {
                     snsNotification.unsubscribeFromTopic();
                 } else {
+                  try{
                     // Otherwise process the message
-                    System.out.printf("Received message %n"
+                    PrintWriter out = httpResponse.getWriter();
+                    out.printf("Clarke Roche");
+                    /*"Received message %n"
                                       + "Subject=%s %n"
                                       + "Message = %s %n",
                                       snsNotification.getSubject(), snsNotification.getMessage());
+                                      */
+                                    }catch(IOException e){
+                                      System.err.println("Error found...");
+                                    }
                 }
             }
+
 
             @Override
             public void handle(SnsUnsubscribeConfirmation message) {
