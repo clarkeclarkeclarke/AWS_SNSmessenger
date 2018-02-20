@@ -1,0 +1,7 @@
+<configuration>
+    <appender name="Boxfuse-CloudwatchLogs" class="com.boxfuse.cloudwatchlogs.logback.CloudwatchLogsLogbackAppender"/>
+
+    <root level="debug">
+        <appender-ref ref="Boxfuse-CloudwatchLogs" />
+    </root>
+</configuration>

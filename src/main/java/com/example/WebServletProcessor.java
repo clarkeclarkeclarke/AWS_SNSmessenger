@@ -25,10 +25,20 @@ import java.io.PrintWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import java.util.Enumeration;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import com.amazonaws.services.lambda.runtime.Context;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+//import org.apache.log4j.*;
+//import org.slf4j.LoggerFactory;
+//import com.amazonaws.services.lambda.runtime.Context;
+//import com.amazonaws.services.lambda.runtime.LambdaLogger;
 
 /**
  * Displays up to 10 of the most recently received messages. Bound to 'GET /'.
@@ -36,7 +46,7 @@ import javax.servlet.ServletResponse;
 public class WebServletProcessor implements HttpServletProcessor {
 
     private final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-    private Logger logger = Logger.getLogger(this.getClass());
+    //private Logger logger = Logger.getLogger(this.getClass());
 
     @Override
     public void process(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
@@ -49,8 +59,10 @@ public class WebServletProcessor implements HttpServletProcessor {
         if (recentMessages.isEmpty()) {
           PrintWriter out = httpResponse.getWriter();
           out.printf("OK");
-          String req = httpRequest.getRequestURI();
-          logger.debug("Requested Resource::"+req);
+          //Logger LOGGER = LoggerFactory.getLogger(WebServletProcessor.class);
+          //LOGGER.info("My message...");
+          /*String req = httpRequest.getRequestURI();
+          logger.debug("Requested Resource::"+req);*/
 
           /*Enumeration<String> enumeration = req.getParameterNames();
 
@@ -72,10 +84,23 @@ public class WebServletProcessor implements HttpServletProcessor {
         }
     }
 
-    public void answer(HttpServletResponse httpResponse) throws IOException {
-      PrintWriter ans = httpResponse.getWriter();
-      ans.printf("Clarke Roche");
-      ans.printf("clarkeroche@gmail.com");
+    static final Logger logger = LogManager.getLogger(WebServletProcessor.class);
+
+    public String myHandler(String name, Context context) {
+        // System.out: One log statement but with a line break (AWS Lambda writes two events to CloudWatch).
+        System.out.println("log data from stdout \n this is continuation of system.out");
+
+       // System.err: One log statement but with a line break (AWS Lambda writes two events to CloudWatch).
+        System.err.println("log data from stderr. \n this is a continuation of system.err");
+
+        // Use log4j to log the same thing as above and AWS Lambda will log only one event in CloudWatch.
+        logger.debug("log data from log4j debug \n this is continuation of log4j debug");
+
+        logger.error("log data from log4j err. \n this is a continuation of log4j.err");
+
+        // Return will include the log stream name so you can look
+        // up the log later.
+        return String.format("Hello %s. log stream = %s", name, context.getLogStreamName());
     }
 
     private void displayMessage(HttpServletResponse httpServletResponse, SnsMessage m) {
